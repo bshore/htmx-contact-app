@@ -1,0 +1,19 @@
+package views
+
+import (
+	"fmt"
+	"github.com/bshore/htmx-contact-app/internal/model"
+)
+
+templ Show(contact model.Contact) {
+	@Layout()
+	<h1>{ contact.First } { contact.Last }</h1>
+	<div>
+		<div>Phone: { contact.Phone }</div>
+		<div>Email: { contact.Email }</div>
+	</div>
+	<p>
+		<a href={ templ.URL(fmt.Sprintf("/contacts/%s/edit", contact.ID)) }>Edit</a>
+		<a href="/contacts">Back</a>
+	</p>
+}

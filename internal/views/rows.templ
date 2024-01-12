@@ -1,0 +1,48 @@
+package views
+
+import (
+	"fmt"
+	"github.com/bshore/htmx-contact-app/internal/model"
+)
+
+templ Rows(contacts []model.Contact) {
+	for _, c := range contacts {
+		<tr>
+			<td>
+				<input
+					type="checkbox"
+					name="selected_contact_ids"
+					value={ c.ID }
+					x-model="selected"
+				/>
+			</td>
+			<td>{ c.First }</td>
+			<td>{ c.Last }</td>
+			<td>{ c.Phone }</td>
+			<td>{ c.Email }</td>
+			<td>
+				<div data-overflow-menu>
+					<button
+						type="button"
+						aria-haspopup="menu"
+						aria-controls={ fmt.Sprintf("contact-menu-%s", c.ID) }
+					>
+						Options
+					</button>
+					<div role="menu" hidden id={ fmt.Sprintf("contact-menu-%s", c.ID) }>
+						<a role="menuitem" href={ templ.URL(fmt.Sprintf("/contacts/%s/edit", c.ID)) }>Edit</a>
+						<a role="menuitem" href={ templ.URL(fmt.Sprintf("/contacts/%s", c.ID)) }>View</a>
+						<a
+							role="menuitem"
+							href="#"
+							hx-delete={ fmt.Sprintf("/contacts/%s", c.ID) }
+							hx-confirm="Are you sure you want to delete this contact?"
+							hx-swap="outerHTML swap:1s"
+							hx-target="closest tr"
+						>Delete</a>
+					</div>
+				</div>
+			</td>
+		</tr>
+	}
+}

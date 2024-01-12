@@ -1,0 +1,5 @@
+# ignore pocketbase sqlite db file
+pb_data
+
+# ignore generated templ code
+**/*_templ.go
