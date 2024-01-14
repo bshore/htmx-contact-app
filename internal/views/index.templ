@@ -21,6 +21,7 @@ templ Index(search string, page int64, contacts []model.Contact) {
 			hx-get="/contacts"
 			hx-trigger="search, keyup delay:200ms changed"
 			hx-target="#tbody"
+			hx-select="tbody tr"
 			hx-push-url="true"
 			hx-indicator="#spinner"
 		/>
@@ -73,6 +74,9 @@ templ Index(search string, page int64, contacts []model.Contact) {
 	</form>
 	<p>
 		<a href="/contacts/new">Add Contact</a>
+		<span hx-get="/contacts/count" hx-trigger="revealed">
+			<img id="spinner" class="htmx-indicator" src="/static/img/spinning-circles.svg"/>
+		</span>
 	</p>
 }
 

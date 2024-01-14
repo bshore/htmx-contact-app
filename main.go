@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -59,7 +61,39 @@ func main() {
 			if err != nil {
 				return err
 			}
+			if c.Request().Header.Get("HX-TRIGGER") == "search" {
+				return views.Render(c, views.Rows(page, contacts))
+			}
 			return views.Render(c, views.Index(search, page, contacts))
+		})
+
+		// Delete multiple Contacts
+		e.Router.DELETE("/contacts", func(c echo.Context) error {
+			// NOTE: a little weird, I expected the form data to be in c.FormValues or c.Request().Form rather
+			//       than in the Body? I thought DELETE can't have a Body? Is this an issue with Echo or PocketBase?
+			bs, err := io.ReadAll(c.Request().Body)
+			if err != nil {
+				return err
+			}
+			values, err := url.ParseQuery(string(bs))
+			if err != nil {
+				return err
+			}
+			contactIDs := values["selected_contact_ids"]
+			err = db.DeleteContacts(contactIDs)
+			if err != nil {
+				return err
+			}
+			return c.Redirect(http.StatusSeeOther, "/contacts")
+		})
+
+		// Get Count of Contacts
+		e.Router.GET("/contacts/count", func(c echo.Context) error {
+			count, err := db.CountContacts()
+			if err != nil {
+				return err
+			}
+			return c.String(http.StatusOK, fmt.Sprintf("( %s total Contacts)", count))
 		})
 
 		// Create Contact Form

@@ -84,6 +84,21 @@ func (d *DBClient) searchContacts(search string, page int64) ([]Contact, error) 
 	return contacts, nil
 }
 
+func (d *DBClient) CountContacts() (string, error) {
+	var count string
+	rows, err := d.dao.DB().Select("COUNT(1)").From("contacts").Rows()
+	if err != nil {
+		return "", err
+	}
+	for rows.Next() {
+		err = rows.Scan(&count)
+		if err != nil {
+			return "", err
+		}
+	}
+	return count, nil
+}
+
 func (d *DBClient) CreateContact(c Contact) error {
 	col, err := d.dao.FindCollectionByNameOrId("contacts")
 	if err != nil {
@@ -145,4 +160,18 @@ func (d *DBClient) DeleteContactByID(id string) error {
 	}
 
 	return d.dao.DeleteRecord(rec)
+}
+
+func (d *DBClient) DeleteContacts(contactIDs []string) error {
+	records, err := d.dao.FindRecordsByIds("contacts", contactIDs)
+	if err != nil {
+		return err
+	}
+	for _, rec := range records {
+		err = d.dao.DeleteRecord(rec)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
