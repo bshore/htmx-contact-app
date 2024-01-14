@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	_ "github.com/bshore/htmx-contact-app/internal/migrations"
@@ -49,11 +50,16 @@ func main() {
 		// List Contacts
 		e.Router.GET("/contacts", func(c echo.Context) error {
 			search := c.QueryParam("q")
-			contacts, err := db.ListContacts(search)
+			pageStr := c.QueryParam("page")
+			page, _ := strconv.ParseInt(pageStr, 10, 64) // skipping err check because we'll accept page 0 as a default
+			if page < 0 {
+				return fmt.Errorf("page cannot be negative (%d)", page)
+			}
+			contacts, err := db.ListContacts(search, page)
 			if err != nil {
 				return err
 			}
-			return views.Render(c, views.Index(search, contacts))
+			return views.Render(c, views.Index(search, page, contacts))
 		})
 
 		// Create Contact Form
@@ -92,6 +98,24 @@ func main() {
 				return err
 			}
 			return views.Render(c, views.Show(contact))
+		})
+
+		// Get Contact by ID, validate and check if exists
+		e.Router.GET("/contacts/:id/email", func(c echo.Context) error {
+			id := c.PathParam("id")
+			email := c.QueryParam("email")
+			contact, err := db.GetContactByID(id)
+			if err != nil {
+				return err
+			}
+			contact.Email = email
+			if vErrs, ok := contact.Validate(); !ok {
+				return c.String(http.StatusOK, vErrs.Email)
+			}
+			if exists := db.DoesEmailExist(id, email); exists {
+				return c.String(http.StatusOK, "Contact with this email already exists")
+			}
+			return c.String(http.StatusOK, "")
 		})
 
 		// Get Edit Contact Form
@@ -140,7 +164,6 @@ func main() {
 			return c.Redirect(http.StatusSeeOther, "/contacts")
 
 		})
-
 		return nil
 	})
 

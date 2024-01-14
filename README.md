@@ -30,6 +30,12 @@ templ generate
 go run main.go serve
 ```
 
-#### Up next
+### Notes/Takeaways
 
-Chapter 4 - https://hypermedia.systems/extending-html-as-hypermedia/
+#### `hx-boost`
+
+Requests use AJAX rather than the browser built-in, and HTMX knows to only swap the `<body>` tag. This avoids a
+"Flash of Unstyled Content" side-effect common to native HTML while the `<head>` is being processed, before
+styles take effect on the page. Using `hx-boost` means the `<head>` stays, and only the `<body>` is swapped, so
+all styles are already loaded. It can be inherited, so it can probably just be placed directly on
+`<body hx-boost="true">`, and specific elements disabled with `hx-boost="false"` (Images, PDFs, etc.)

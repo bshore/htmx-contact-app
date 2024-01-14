@@ -1,2 +1,2 @@
 dev:
-	@wgo -file=.go -file=.html -xfile=_templ.go templ generate :: go run main.go serve
+	@wgo -file=.go -file=.templ -xfile=_templ.go templ generate :: go run main.go serve

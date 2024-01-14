@@ -5,7 +5,7 @@ import (
 	"github.com/bshore/htmx-contact-app/internal/model"
 )
 
-templ Rows(contacts []model.Contact) {
+templ Rows(page int64, contacts []model.Contact) {
 	for _, c := range contacts {
 		<tr>
 			<td>
@@ -42,6 +42,21 @@ templ Rows(contacts []model.Contact) {
 						>Delete</a>
 					</div>
 				</div>
+			</td>
+		</tr>
+	}
+	if len(contacts) == 10 {
+		<tr>
+			<td colspan="5" style="text-align: center">
+				<button
+					hx-target="closest tr"
+					hx-trigger="revealed"
+					hx-swap="outerHTML"
+					hx-select="tbody > tr"
+					hx-get={ fmt.Sprintf("/contacts?page=%d", page+1) }
+				>
+					Loading More...
+				</button>
 			</td>
 		</tr>
 	}

@@ -9,7 +9,7 @@ var atClickAttr = templ.Attributes{
 	"@click": "confirm(`Delete ${selected.length} contacts?`) && htmx.ajax('DELETE', '/contacts', { source: $root, target: document.body })",
 }
 
-templ Index(search string, contacts []model.Contact) {
+templ Index(search string, page int64, contacts []model.Contact) {
 	@Layout()
 	<form action="/contacts" method="get" class="tool-bar">
 		<label for="search">Search Term</label>
@@ -60,7 +60,7 @@ templ Index(search string, contacts []model.Contact) {
 				</tr>
 			</thead>
 			<tbody id="tbody">
-				@Rows(contacts)
+				@Rows(page, contacts)
 			</tbody>
 		</table>
 		<button
@@ -75,3 +75,14 @@ templ Index(search string, contacts []model.Contact) {
 		<a href="/contacts/new">Add Contact</a>
 	</p>
 }
+
+// <div>
+// 	<span style="display:flex;justify-content:center">
+// 		if page >= 1 {
+// 			<a href={ templ.URL(fmt.Sprintf("/contacts?page=%d", page-1)) }>Previous Page</a>
+// 		}
+// 		if len(contacts) == 10 {
+// 			<a href={ templ.URL(fmt.Sprintf("/contacts?page=%d", page+1)) }>Next Page</a>
+// 		}
+// 	</span>
+// </div>

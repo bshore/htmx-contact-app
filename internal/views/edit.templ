@@ -22,7 +22,7 @@ templ Edit(contact model.Contact, errors model.ContactError) {
 						type="email"
 						hx-get={ fmt.Sprintf("/contacts/%s/email", contact.ID) }
 						hx-target="next .error"
-						hx-trigger="change, keyup delay:200ms"
+						hx-trigger="change, keyup delay:200ms changed"
 						placeholder="Email"
 						value={ contact.Email }
 					/>
