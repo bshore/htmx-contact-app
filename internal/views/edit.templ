@@ -20,7 +20,7 @@ templ Edit(contact model.Contact, errors model.ContactError) {
 						name="email"
 						id="email"
 						type="email"
-						hx-get={ fmt.Sprintf("/contacts/%s/email", contact.ID) }
+						hx-get={ string(templ.URL(fmt.Sprintf("/contacts/%s/email", contact.ID))) }
 						hx-target="next .error"
 						hx-trigger="change, keyup delay:200ms changed"
 						placeholder="Email"
@@ -67,7 +67,7 @@ templ Edit(contact model.Contact, errors model.ContactError) {
 	</form>
 	<button
 		id="delete-btn"
-		hx-delete={ fmt.Sprintf("/contacts/%s", contact.ID) }
+		hx-delete={ string(templ.URL(fmt.Sprintf("/contacts/%s", contact.ID))) }
 		hx-push-url="true"
 		hx-confirm="Are you sure you want to delete this contact?"
 		hx-target="body"

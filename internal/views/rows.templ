@@ -35,7 +35,7 @@ templ Rows(page int64, contacts []model.Contact) {
 						<a
 							role="menuitem"
 							href="#"
-							hx-delete={ fmt.Sprintf("/contacts/%s", c.ID) }
+							hx-delete={ string(templ.URL(fmt.Sprintf("/contacts/%s", c.ID))) }
 							hx-confirm="Are you sure you want to delete this contact?"
 							hx-swap="outerHTML swap:1s"
 							hx-target="closest tr"
@@ -53,7 +53,7 @@ templ Rows(page int64, contacts []model.Contact) {
 					hx-trigger="revealed"
 					hx-swap="outerHTML"
 					hx-select="tbody > tr"
-					hx-get={ fmt.Sprintf("/contacts?page=%d", page+1) }
+					hx-get={ string(templ.URL(fmt.Sprintf("/contacts?page=%d", page+1))) }
 				>
 					Loading More...
 				</button>

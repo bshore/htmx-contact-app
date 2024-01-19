@@ -65,7 +65,7 @@ templ Index(search string, page int64, contacts []model.Contact) {
 			</tbody>
 		</table>
 		<button
-			hx-delete="/contacts"
+			hx-delete={ string(templ.URL("/contacts")) }
 			hx-confirm="Are you sure you want to delete these contacts?"
 			hx-target="body"
 		>
@@ -74,7 +74,7 @@ templ Index(search string, page int64, contacts []model.Contact) {
 	</form>
 	<p>
 		<a href="/contacts/new">Add Contact</a>
-		<span hx-get="/contacts/count" hx-trigger="revealed">
+		<span hx-get={ string(templ.URL("/contacts/count")) } hx-trigger="revealed">
 			<img id="spinner" class="htmx-indicator" src="/static/img/spinning-circles.svg"/>
 		</span>
 	</p>
