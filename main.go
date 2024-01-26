@@ -38,12 +38,21 @@ func main() {
 		return nil
 	})
 
+	// TODO: maybe make it possible to have multiple archivers (multiple users)
+	archiver := model.NewArchiver()
+
 	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
 		e.Router.Use(middleware.Logger())
 		e.Router.Use(middleware.Recover())
 
 		// image/js/css static assets
 		e.Router.GET("/static/*", apis.StaticDirectoryHandler(os.DirFS("./static"), false))
+
+		// archive assets
+		e.Router.GET("/archive/:filepath", func(c echo.Context) error {
+			fp := c.PathParam("filepath")
+			return c.Attachment(fmt.Sprintf("archive/%s", fp), fp)
+		})
 
 		e.Router.GET("/", func(c echo.Context) error {
 			return c.Redirect(http.StatusMovedPermanently, "/contacts")
@@ -64,7 +73,7 @@ func main() {
 			if c.Request().Header.Get("HX-TRIGGER") == "search" {
 				return views.Render(c, views.Rows(page, contacts))
 			}
-			return views.Render(c, views.Index(search, page, contacts))
+			return views.Render(c, views.Index(search, page, contacts, archiver))
 		})
 
 		// Delete multiple Contacts
@@ -85,6 +94,23 @@ func main() {
 				return err
 			}
 			return c.Redirect(http.StatusSeeOther, "/contacts")
+		})
+
+		// Download Archive
+		e.Router.POST("/contacts/archive", func(c echo.Context) error {
+			archiver.Run(db)
+			return views.Render(c, views.Archive(archiver))
+		})
+
+		// Archive progress
+		e.Router.GET("/contacts/archive", func(c echo.Context) error {
+			return views.Render(c, views.Archive(archiver))
+		})
+
+		// Clear archiver state
+		e.Router.DELETE("/contacts/archive", func(c echo.Context) error {
+			archiver.Reset()
+			return views.Render(c, views.Archive(archiver))
 		})
 
 		// Get Count of Contacts
@@ -198,6 +224,9 @@ func main() {
 			return c.Redirect(http.StatusSeeOther, "/contacts")
 
 		})
+
+		// ========================================
+		// end of app.OnBeforeServe()
 		return nil
 	})
 

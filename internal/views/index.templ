@@ -9,8 +9,9 @@ var atClickAttr = templ.Attributes{
 	"@click": "confirm(`Delete ${selected.length} contacts?`) && htmx.ajax('DELETE', '/contacts', { source: $root, target: document.body })",
 }
 
-templ Index(search string, page int64, contacts []model.Contact) {
+templ Index(search string, page int64, contacts []model.Contact, archiver *model.Archiver) {
 	@Layout()
+	@Archive(archiver)
 	<form action="/contacts" method="get" class="tool-bar">
 		<label for="search">Search Term</label>
 		<input

@@ -9,11 +9,11 @@ import (
 )
 
 type Contact struct {
-	ID    string `db:"id"`
-	First string `db:"first"`
-	Last  string `db:"last"`
-	Phone string `db:"phone"`
-	Email string `db:"email"`
+	ID    string `db:"id" json:"-"`
+	First string `db:"first" json:"first"`
+	Last  string `db:"last" json:"last"`
+	Phone string `db:"phone" json:"phone"`
+	Email string `db:"email" json:"email"`
 }
 
 type ContactError struct {

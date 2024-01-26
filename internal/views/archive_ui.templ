@@ -1,0 +1,36 @@
+package views
+
+import (
+	"fmt"
+	"github.com/bshore/htmx-contact-app/internal/model"
+)
+
+templ Archive(archiver *model.Archiver) {
+	<div id="archive-ui" hx-target="this" hx-swap="outerHTML">
+		if archiver.Status() == "Waiting" {
+			<button hx-post="/contacts/archive">
+				Download Contact Archive
+			</button>
+		}
+		if archiver.Status() == "Running" {
+			<div hx-get="/contacts/archive" hx-trigger="load delay:500ms">
+				Creating Archive...
+				<div class="progress">
+					<div
+						id="archive-progress"
+						class="progress-bar"
+						{ 	templ.Attributes{
+							"style": fmt.Sprintf("width:%s%%", archiver.Progress()),
+							"aria-valuenow": fmt.Sprintf("width:%s%%", archiver.Progress()),
+							}... }
+					></div>
+				</div>
+			</div>
+		}
+		if archiver.Status() == "Complete" {
+			<a hx-boost="false" href={ templ.URL(fmt.Sprintf("/%s", archiver.Name())) } _="on load click() me">Archive Downloading!  Click here if the download does not start.</a>
+			<br/>
+			<button hx-delete="/contacts/archive">Clear Download</button>
+		}
+	</div>
+}
